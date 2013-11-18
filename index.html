@@ -1,0 +1,57 @@
+<!Doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <script src="game.js"></script>
+    <style type="text/css">
+      body, div {
+      padding: 0;
+      margin: 0;
+      font-family: Arial;
+      }
+      #player1 {
+      background-color: #FFFFFF;
+      color: #000000;
+      width: 50%;
+      position: relative;
+      float: left;
+      }
+      #player2 {
+      background-color: #000000;
+      color: #FFFFFF;
+      width: 50%;
+      position: relative;
+      float: right;
+      }
+      #container {
+      margin-bottom: 20px;
+      }
+      #title, .player, #winner {
+      margin: 0 auto;
+      text-align: center;
+      }  
+      h1 {
+      font-size: 48pt;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 id="title">TWO-DICE PIG</h1>
+    <div id="container">
+      <h2 id="currentPlayer">Player 1</h2>
+      <input type="button" id="rollBut" value="Roll" onclick="roll()">
+      <br>
+      <input type="button" id="holdBut" value="Hold" onclick="endTurn()">
+      <div id="currentRoll">
+      </div>
+      <div id="turnScore">
+      </div>
+    </div>
+    <div id="player1">
+      <h3 class="player">Player 1</h3>
+    </div>
+    <div id="player2">
+      <h3 class="player">Player 2</h3>
+    </div>
+  </body>
+</html>
