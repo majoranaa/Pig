@@ -4,6 +4,7 @@
   <head>
     <meta charset="utf-8">
     <script src="game.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <style type="text/css">
       body, div {
       padding: 0;
@@ -40,9 +41,10 @@
     <h1 id="title">TWO-DICE PIG</h1>
     <div id="container">
       <h2 id="currentPlayer">Player 1</h2>
-      <input type="button" id="rollBut" value="Roll" onclick="roll()">
+      <input type="button" id="sendBut" value="Send">
+      <input type="button" id="rollBut" value="Roll">
       <br>
-      <input type="button" id="holdBut" value="Hold" onclick="endTurn()">
+      <input type="button" id="holdBut" value="Hold">
       <div id="currentRoll">
       </div>
       <div id="turnScore">

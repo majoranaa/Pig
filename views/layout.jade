@@ -1,0 +1,16 @@
+doctype 5
+html(lang='en')
+  head
+    meta(charset='utf-8')
+    script(src='/js/game.js')
+    script(src='/socket.io/socket.io.js')
+    link(type='text/css', rel='stylesheet', href='/css/style.css')
+    title TWO-DICE PIG
+  body
+    h1#title TWO-DICE PIG
+    div#container
+      block content
+    div#player1
+      h3.player Player 1
+    div#player2
+      h3.player Player 2
