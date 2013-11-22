@@ -1,4 +1,53 @@
-function endTurn() {
+function endTurn(game, id, socket, app, clients) {
+    if (game.turn == game[id].num) {
+	game[id].total += game[id].score;
+    }
+
+    var turnRes = ("<br>" + game.turns + ") " + game[id].score + " points. Total: " + game[id].total);
+    var state;
+    if (game[id].score == -1) {
+	game[id].score = 0;
+	if (game[id].total == -1) {
+	    state = 0;
+	    game[id].total = 0;
+	} else {
+	    state = 1;
+	}
+    }
+    if (game[id].total > 100) {
+	state = 2;
+    }
+    app.render('game',
+	       {num:game[id].num,
+		turn:game.turn,
+		state:state
+	       },
+	       function(err, html) {
+		   socket.socket(id).emit('updateRound',
+					  {render:html,
+					   turn:game.turn,
+					   res:turnRes});
+	       });
+    app.render('game',
+	       {num:game[game[id].opponent].num,
+		turn:game.turn,
+		state:state
+	       },
+	       function(err, html) {
+		   socket.socket(game[id].opponent).emit('updateRound',
+							    {render:html,
+							     turn:game.turn,
+							     res:turnRes});
+	       });
+
+    if (game.turn == 2 ) {
+	game.turns++;
+	game.turn = 1;
+    } else {
+	game.turn = 2;
+    }
+    game[id].score = 0;
+	/*
     player[current] += score;
     var turnRes = document.createTextNode(turn + ") " + score + " points. Total: " + player[current]);
     document.getElementById("player" + current).appendChild(turnRes);
@@ -29,40 +78,44 @@ function endTurn() {
     }
     document.getElementById("currentPlayer").innerHTML = "Player " + current;
     score = 0;
-    next = false;    
+    next = false;    */
 }
 
-function go() {
-    if (next) {
-	endTurn();
-    }
-    
+function go(game, id, socket, app, clients) {
     var dice1 = Math.floor((Math.random()*6)+1);
     var dice2 = Math.floor((Math.random()*6)+1);
     
-    var trial = document.createTextNode(dice1 + " and " + dice2);
-    
     if (dice1 == 1 && dice2 == 1) {
-	player[current] = 0;
-	score = 0;
-	document.getElementById("currentRoll").innerHTML = "Oh that sucks. You rolled two ones. Your total score is now zero. Other player now proceed";	
+	game[id].score = -1;
+	game[id].total = -1;
+	endTurn(game, id, socket, app, clients);
+	return -1;
+	/*	document.getElementById("currentRoll").innerHTML = "Oh that sucks. You rolled two ones. Your total score is now zero. Other player now proceed";*/
     } else if (dice1 == 1 || dice2 == 1) {
-	score = 0;
-	document.getElementById("currentRoll").innerHTML = "Nice try. You rolled a one. Your turn score is now zero. Other player now proceed";
+	game[id].score = -1;
+	endTurn(game, id, socket, app, clients);
+	return -1;
+	/*	document.getElementById("currentRoll").innerHTML = "Nice try. You rolled a one. Your turn score is now zero. Other player now proceed";*/
     } else {
-	score += (dice1 + dice2);
+	game[id].score += (dice1 + dice2);
     }
+
+    return [dice1, dice2];
     
-    if (score == 0) {
+    /*if (game[id].score == 0) {
 	hold.style.display = "none";
 	document.getElementById("turnScore").innerHTML = "";
 	roll.setAttribute('value', 'Roll');    
 	next = true;
 	return;
-    }
-
-    roll.setAttribute('value', 'Roll Again');
+    }*/
+    
+/*    roll.setAttribute('value', 'Roll Again');
     document.getElementById("currentRoll").appendChild(trial);
     document.getElementById("currentRoll").appendChild(document.createElement('br'));
-    document.getElementById("turnScore").innerHTML = score;
+    document.getElementById("turnScore").innerHTML = score;*/
 }   
+
+exports.go = go;
+exports.endTurn = endTurn;
+

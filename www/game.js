@@ -11,15 +11,18 @@ var socket;
 window.onload = function() {
     roll = document.getElementById('rollBut');
     hold = document.getElementById('holdBut');
-    send = document.getElementById('sendBut');
     
-    socket = io.connect("http://localhost:5000");
+    socket = io.connect('http://localhost:5000');
+    socket.on('connect', function() {
+	alert("Connected");
+    });
+    socket.on('id', function(data) {
+	alert("Got id");
+	document.getElementById('id').innerHTML = data.message;
+    });
 
     roll.onclick = go();
     hold.onclick = endTurn();
-    send.onclick = function() {
-	socket.send('this is a message');
-    }
 }
 
 function endTurn() {

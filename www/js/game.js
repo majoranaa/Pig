@@ -1,91 +1,51 @@
-var score = 0;
-var player = new Array();
-player[1] = 0;
-player[2] = 0;
-var current = 1;
-var turn = 1;
-var next = false;
-var roll, hold;
+var num;
+var socket;
 
 window.onload = function() {
-    roll = document.getElementById('rollBut');
-    hold = document.getElementById('holdBut');
-    send = document.getElementById('sendBut');
-    
-    var socket = io.connect("http://localhost:5000");
-
-    roll.onclick = go();
-    hold.onclick = endTurn();
-    send.onclick = function() {
-	socket.send('this is a message');
+    var xmlhttp;
+    if (window.XMLHttpRequest)
+    {// code for IE7+, Firefox, Chrome, Opera, Safari
+	xmlhttp=new XMLHttpRequest();
     }
+    else
+    {// code for IE6, IE5
+	xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    
+    socket = io.connect('http://localhost:5000');
+    socket.on('id', function(data) {
+	document.getElementById('id').innerHTML = data.message;
+    });
+    socket.on('new', function(data) {
+	num = data.num;
+	xmlhttp.open("GET","/newgame?num="+num,false);
+	xmlhttp.send();
+	document.getElementById("container").innerHTML=xmlhttp.responseText;
+    });
+    socket.on('updateRound', function(data) {
+	var turn = data.turn;
+	document.getElementById("player"+turn).innerHTML += (data.res);
+	document.getElementById("container").innerHTML = (data.render);
+    });
+    socket.on('updateGo', function(data) {
+	document.getElementById("currentRoll").innerHTML += data.message;
+	document.getElementById("turnScore").innerHTML = data.score;
+    });
+    socket.on('find', function(data) {
+	document.getElementById("container").innerHTML = data.message;
+    });
 }
 
 function endTurn() {
-    player[current] += score;
-    var turnRes = document.createTextNode(turn + ") " + score + " points. Total: " + player[current]);
-    document.getElementById("player" + current).appendChild(turnRes);
-    document.getElementById("player" + current).appendChild(document.createElement('br'));
-    document.getElementById("currentRoll").innerHTML = "";
-    document.getElementById("turnScore").innerHTML = "";
-    hold.style.display = "block";
-    roll.setAttribute('value', 'Roll');    
-    if (player[current] > 100) {
-	var win = document.createElement('h1');
-	win.innerHTML = "Player " + current + " wins!!!";
-	win.setAttribute('id', 'winner');
-	document.getElementById("currentPlayer").style.display = "none";
-	hold.style.display = "none";
-	roll.style.display = "none";
-	document.getElementById("container").appendChild(win);
-	return;
-    }
-
-    hold.style.display = "block";
-    roll.setAttribute('value', 'Roll');    
-    
-    if (current == 1) {
-	current = 2;
-    } else {
-	current = 1;
-	turn++;
-    }
-    document.getElementById("currentPlayer").innerHTML = "Player " + current;
-    score = 0;
-    next = false;    
+    socket.emit('end');
 }
 
 function go() {
-    if (next) {
-	endTurn();
-    }
-    
-    var dice1 = Math.floor((Math.random()*6)+1);
-    var dice2 = Math.floor((Math.random()*6)+1);
-    
-    var trial = document.createTextNode(dice1 + " and " + dice2);
-    
-    if (dice1 == 1 && dice2 == 1) {
-	player[current] = 0;
-	score = 0;
-	document.getElementById("currentRoll").innerHTML = "Oh that sucks. You rolled two ones. Your total score is now zero. Other player now proceed";	
-    } else if (dice1 == 1 || dice2 == 1) {
-	score = 0;
-	document.getElementById("currentRoll").innerHTML = "Nice try. You rolled a one. Your turn score is now zero. Other player now proceed";
-    } else {
-	score += (dice1 + dice2);
-    }
-    
-    if (score == 0) {
-	hold.style.display = "none";
-	document.getElementById("turnScore").innerHTML = "";
-	roll.setAttribute('value', 'Roll');    
-	next = true;
-	return;
-    }
-
-    roll.setAttribute('value', 'Roll Again');
-    document.getElementById("currentRoll").appendChild(trial);
-    document.getElementById("currentRoll").appendChild(document.createElement('br'));
-    document.getElementById("turnScore").innerHTML = score;
+    socket.emit('go');
 }   
+
+function findGame() {
+    socket.emit('findGame');
+    document.getElementById("player1").innerHTML = "";
+    document.getElementById("player2").innerHTML = "";
+}
