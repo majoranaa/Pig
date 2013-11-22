@@ -12,7 +12,7 @@ window.onload = function() {
 	xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
     }
     
-    socket = io.connect();
+    socket = io.connect("http://localhost:5000");
     socket.on('id', function(data) {
 	document.getElementById('id').innerHTML = data.message;
     });
