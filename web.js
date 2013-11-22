@@ -15,7 +15,7 @@ app.engine('jade', jade.__express);
 app.get('/', routes.index);
 app.get('/newgame', routes.newgame(games));
 
-var port = 5000;
+var port = process.env.PORT || 5000;
 var server = app.listen(port, function() {
     console.log("Listening on " + port);
 });
