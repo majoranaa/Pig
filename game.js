@@ -1,18 +1,15 @@
-function endTurn(game, id, socket, app, clients) {
+function endTurn(game, id, socket, app, clients, lose) {
     if (game.turn == game[id].num) {
 	game[id].total += game[id].score;
     }
 
     var turnRes = ("<br>" + game.turns + ") " + game[id].score + " points. Total: " + game[id].total);
     var state;
-    if (game[id].score == -1) {
-	game[id].score = 0;
-	if (game[id].total == -1) {
-	    state = 0;
-	    game[id].total = 0;
-	} else {
-	    state = 1;
-	}
+    if (lose == 1) {
+	state = 1;
+    } else if (lose == 0) {
+	state = 0;
+	game[id].total = 0;
     }
     if (game[id].total > 100) {
 	state = 2;
@@ -86,14 +83,14 @@ function go(game, id, socket, app, clients) {
     var dice2 = Math.floor((Math.random()*6)+1);
     
     if (dice1 == 1 && dice2 == 1) {
-	game[id].score = -1;
-	game[id].total = -1;
-	endTurn(game, id, socket, app, clients);
+	game[id].score = 0;
+	game[id].total = 0;
+	endTurn(game, id, socket, app, clients, 0);
 	return -1;
 	/*	document.getElementById("currentRoll").innerHTML = "Oh that sucks. You rolled two ones. Your total score is now zero. Other player now proceed";*/
     } else if (dice1 == 1 || dice2 == 1) {
-	game[id].score = -1;
-	endTurn(game, id, socket, app, clients);
+	game[id].score = 0;
+	endTurn(game, id, socket, app, clients, 1);
 	return -1;
 	/*	document.getElementById("currentRoll").innerHTML = "Nice try. You rolled a one. Your turn score is now zero. Other player now proceed";*/
     } else {
