@@ -15,7 +15,7 @@ app.engine('jade', jade.__express);
 app.get('/', routes.index);
 app.get('/newgame', routes.newgame(games));
 
-var port = 8080;
+var port = 5000;
 var server = app.listen(port, function() {
     console.log("Listening on " + port);
 });
@@ -74,10 +74,26 @@ io.sockets.on('connection', function(client) {
     client.on('disconnect', function() {
 	openIds.push(clients[client.id].id);	
 	var currGame = games[clients[client.id].game];
-	waiting.push(currGame[client.id].opponent);
+	var oppId = (currGame[client.id].opponent);
 	var wait = "Opponent disconnected. Waiting for next player..."
-	io.sockets.socket(clients[client.id].opponent).emit('disconnect',
-							    {message:wait});	
+	io.sockets.socket(oppId).emit('disconnect', {message:wait});	
+	if (waiting.length > 0) {
+	    var opp = waiting.pop();
+	    io.sockets.socket(oppId).emit('new', {num : 2});
+	    io.sockets.socket(opp).emit('new', {num : 1});
+	    var newOne = {score:0, total:0, opponent:oppId, num:1};
+	    var newTwo = {score:0, total:0, opponent:opp, num:2};
+	    var newGame = {};
+	    newGame[opp] = newOne;
+	    newGame[oppId] = newTwo;
+	    newGame.turn = 1;
+	    newGame.turns = 0;
+	    games.push(newGame);
+	    clients[oppId].game=games.length-1;
+	    clients[opp].game=games.length-1;
+	} else {
+	    waiting.push(oppId);
+	}
     });
     client.on('findGame', function() {
 	if (waiting.length > 0) {

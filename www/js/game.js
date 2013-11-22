@@ -34,6 +34,11 @@ window.onload = function() {
     socket.on('find', function(data) {
 	document.getElementById("container").innerHTML = data.message;
     });
+    socket.on('disconnect', function(data) {
+	document.getElementById("container").innerHTML = data.message;
+	document.getElementById("player1").innerHTML = "";
+	document.getElementById("player2").innerHTML = "";
+    });
 }
 
 function endTurn() {
