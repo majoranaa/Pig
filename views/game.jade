@@ -1,6 +1,6 @@
 h2#currentPlayer Player #{num}
 - if (state == 2)
-  h1 Player #{num} won!!!
+  h1 Player #{turn} won!!!
   input(type='button', value='Find new game', onclick='findGame()')
 - else if (num != turn)
   input#rollBut(type='button', value='Roll', onclick='go()')
