@@ -36,8 +36,12 @@ window.onload = function() {
     });
     socket.on('disconnect', function(data) {
 	document.getElementById("container").innerHTML = data.message;
-	document.getElementById("player1").innerHTML = "Player 1";
-	document.getElementById("player2").innerHTML = "Player 2";
+	head1 = document.getElementById("player1").childNodes[0];
+	head2 = document.getElementById("player2").childNodes[0];
+	document.getElementById("player1").innerHTML = "";
+	document.getElementById("player1").appendChild(head1);
+	document.getElementById("player2").innerHTML = "";
+	document.getElementById("player2").appendChild(head2);  
     });
 }
 
@@ -51,6 +55,10 @@ function go() {
 
 function findGame() {
     socket.emit('findGame');
-    document.getElementById("player1").childNodes[0].innerHTML = "Player 1";
-    document.getElementById("player2").childNodes[0].innerHTML = "Player 2";
+    head1 = document.getElementById("player1").childNodes[0];
+    head2 = document.getElementById("player2").childNodes[0];
+    document.getElementById("player1").innerHTML = "";
+    document.getElementById("player1").appendChild(head1);
+    document.getElementById("player2").innerHTML = "";
+    document.getElementById("player2").appendChild(head2);  
 }
