@@ -51,6 +51,6 @@ function go() {
 
 function findGame() {
     socket.emit('findGame');
-    document.getElementById("player1").innerHTML = "Player 1";
-    document.getElementById("player2").innerHTML = "Player 2";
+    document.getElementById("player1").childNodes[0].innerHTML = "Player 1";
+    document.getElementById("player2").childNodes[0].innerHTML = "Player 2";
 }
